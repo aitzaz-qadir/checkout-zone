@@ -2,6 +2,7 @@ package com.checkout.checkout_zone.entity;
 
 // Import statements
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -47,26 +48,31 @@ public class CheckoutRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Requesting user is required")
     @ManyToOne
     @JoinColumn(name = "requested_by_user_id", nullable = false)
     private User requestedBy;
 
+    @NotEmpty(message = "At least one equipment item is required")
     @ManyToMany
     @JoinTable(
-        name = "request_equipment",
-        joinColumns = @JoinColumn(name = "request_id"),
-        inverseJoinColumns = @JoinColumn(name = "equipment_id")
+            name = "request_equipment",
+            joinColumns = @JoinColumn(name = "request_id"),
+            inverseJoinColumns = @JoinColumn(name = "equipment_id")
     )
     private Set<Equipment> equipmentItems = new HashSet<>();
 
+    @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus status;
+    @NotNull(message = "Requested date is required")
     @Column(nullable = false)
     private LocalDate requestedDate;
     private LocalDate neededByDate;
 
     // Reason for checkout
+    @Size(max = 1000, message = "Purpose cannot exceed 1000 characters")
     @Column(length = 1000)
     private String purpose;
 
@@ -77,6 +83,7 @@ public class CheckoutRequest {
     private LocalDateTime approvalDate;
 
     // Notes from the approver
+    @Size(max = 500, message = "Approval notes cannot exceed 500 characters")
     @Column(length = 500)
     private String approvalNotes;
 
