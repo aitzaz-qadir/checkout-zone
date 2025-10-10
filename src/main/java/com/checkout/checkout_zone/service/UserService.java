@@ -4,6 +4,7 @@ package com.checkout.checkout_zone.service;
 import com.checkout.checkout_zone.entity.User;
 import com.checkout.checkout_zone.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Create new user
     public User createUser(User user) {
@@ -31,9 +34,24 @@ public class UserService {
         if (user.getActive() == null) {
             user.setActive(true);
         }
-        // TODO: Hash password before saving
+        // Hash password before saving
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+
+    // Authenticate user
+    public Optional<User> authenticate(String username, String password) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            // Check if password matches
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                return Optional.of(user);
+            }
+        }
+        return Optional.empty();
+    }
+
 
     // Get all users
     public List<User> getAllUsers() {
