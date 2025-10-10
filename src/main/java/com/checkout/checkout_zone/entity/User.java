@@ -8,6 +8,27 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="users")
 
+/*
+ * Users Table;
+ *
+ * People who work at the company, can request equipment, approve requests,
+ * and manage inventory depending on their role.
+ *
+ * Fields:
+ * - id (Primary Key)
+ * - username (Unique)
+ * - password (Hashed)
+ * - email (Unique)
+ * - firstName
+ * - lastName
+ * - department
+ * - employeeId (Unique)
+ * - role (Enum: EMPLOYEE, MANAGER, ADMIN)
+ * - active (Boolean)
+ * - createdAt
+ * - updatedAt
+ */
+
 // Class definition
 public class User {
 

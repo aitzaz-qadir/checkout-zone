@@ -10,6 +10,33 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "equipment")
 
+/*
+ * Equipment Table;
+ *
+ * A database to store the actual details of each piece of equipment
+ * available. (each laptop, camera, etc.)
+ *
+ * Fields:
+ * - id (Primary Key)
+ * - internalId (Unique)
+ * - serialNumber (Unique)
+ * - name
+ * - model
+ * - brand
+ * - type (e.g., laptop, camera)
+ * - condition (Enum: NEW, GOOD, FAIR, POOR, DAMAGED)
+ * - status (Enum: AVAILABLE, CHECKED_OUT, UNDER_MAINTENANCE, RETIRED)
+ * - location (e.g., building, room)
+ * - acquisitionDate
+ * - purchasePrice
+ * - currentValue
+ * - warrantyExpiry
+ * - notes
+ * - imageUrl
+ * - createdAt
+ * - updatedAt
+ */
+
 // Class definition
 public class Equipment {
 

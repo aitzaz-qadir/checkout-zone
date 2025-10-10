@@ -9,6 +9,31 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "checkout_records")
 
+/*
+ * Checkout Record Table;
+ *
+ * Logs each instance of equipment being checked out and returned.
+ * Each record links to the user who borrowed it, the equipment item,
+ * and the original request. It tracks dates, condition, and who
+ * managed the process.
+ *
+ * Fields:
+ * - id (Primary Key)
+ * - user (Foreign Key to Users)
+ * - equipment (Foreign Key to Equipment)
+ * - checkoutRequest (Foreign Key to CheckoutRequests)
+ * - checkoutDate
+ * - expectedReturnDate
+ * - actualReturnDate
+ * - conditionAtCheckout (Enum: NEW, GOOD, FAIR, POOR, DAMAGED)
+ * - conditionAtReturn (Enum: NEW, GOOD, FAIR, POOR, DAMAGED)
+ * - returnNotes
+ * - checkedOutByManager (Foreign Key to Users)
+ * - receivedByManager (Foreign Key to Users)
+ * - createdAt
+ * - updatedAt
+ */
+
 // Class definition
 public class CheckoutRecord {
 

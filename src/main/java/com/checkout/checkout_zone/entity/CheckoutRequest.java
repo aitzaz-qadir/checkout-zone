@@ -11,6 +11,34 @@ import java.util.Set;
 @Entity
 @Table(name = "checkout_requests")
 
+/*
+ * Checkout Request Table;
+ *
+ * Like a shopping cart or permission slip for borrowing equipment. This
+ * table holds requests made by employees to borrow one or more pieces of
+ * equipment.
+ *
+ * Fields:
+ * - id (Primary Key)
+ * - requestedBy (Foreign Key to Users)
+ * - equipmentItems (Many-to-Many Foreign Key to Equipment)
+ * - status (Enum: PENDING, APPROVED, REJECTED, COMPLETED, CANCELLED)
+ * - requestedDate
+ * - neededByDate
+ * - purpose (Reason for checkout)
+ * - approvedBy (Foreign Key to Users, who approved/rejected)
+ * - approvalDate
+ * - approvalNotes
+ * - createdAt
+ * - updatedAt
+ *
+ * Notes:
+ *
+ * Also creates a join table "request_equipment" to link requests and equipment.
+ * This allows each request to include multiple equipment items, and each
+ * piece of equipment to be part of multiple requests over time.
+ */
+
 // Class definition
 public class CheckoutRequest {
 
