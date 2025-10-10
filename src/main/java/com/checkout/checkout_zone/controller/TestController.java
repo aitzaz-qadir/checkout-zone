@@ -3,6 +3,10 @@ package com.checkout.checkout_zone.controller;
 // Import statements
 import com.checkout.checkout_zone.entity.Role;
 import com.checkout.checkout_zone.entity.User;
+import com.checkout.checkout_zone.entity.Equipment;
+import com.checkout.checkout_zone.entity.EquipmentCondition;
+import com.checkout.checkout_zone.entity.EquipmentStatus;
+import com.checkout.checkout_zone.repository.EquipmentRepository;
 import com.checkout.checkout_zone.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +48,38 @@ public class TestController {
     @GetMapping("/all-users")
     public List<User> getAllUsers(){
         return userRepository.findAll();
+    }
+
+    @Autowired
+    private EquipmentRepository equipmentRepository;
+
+    // Endpoint to create a new equipment
+    @GetMapping("/create-equipment")
+    public String createEquipment() {
+        Equipment equipment = new Equipment();
+        equipment.setInternalId("LAP-001");
+        equipment.setSerialNumber("SN123456789");
+        equipment.setName("Dell Latitude 5420");
+        equipment.setModel("Latitude 5420");
+        equipment.setBrand("Dell");
+        equipment.setType("Laptop");
+        equipment.setCondition(EquipmentCondition.EXCELLENT);
+        equipment.setStatus(EquipmentStatus.AVAILABLE);
+        equipment.setLocation("Office - Floor 3");
+        equipment.setAcquisitionDate(java.time.LocalDate.of(2024, 1, 15));
+        equipment.setPurchasePrice(new java.math.BigDecimal("1200.00"));
+        equipment.setCurrentValue(new java.math.BigDecimal("1000.00"));
+        equipment.setNotes("Standard company laptop");
+        // Save the equipment to the database
+        equipmentRepository.save(equipment);
+        // Return a success message
+        return "Equipment created successfully!";
+    }
+
+    // Endpoint to retrieve all equipment
+    @GetMapping("/all-equipment")
+    public List<Equipment> getAllEquipment() {
+        return equipmentRepository.findAll();
     }
 
 }
