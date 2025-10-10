@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import java.util.List;
 
 // RestController annotation
@@ -21,7 +22,7 @@ public class UserController {
 
     // Create new user
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         try {
             User created = userService.createUser(user);
             return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -55,7 +56,7 @@ public class UserController {
 
     // Update user
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
         try {
             User updated = userService.updateUser(id, user);
             return new ResponseEntity<>(updated, HttpStatus.OK);

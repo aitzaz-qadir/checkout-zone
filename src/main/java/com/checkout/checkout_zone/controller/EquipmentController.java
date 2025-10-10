@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import java.util.List;
 
 // RestController annotation
@@ -21,7 +22,7 @@ public class EquipmentController {
 
     // Create new equipment
     @PostMapping
-    public ResponseEntity<Equipment> createEquipment(@RequestBody Equipment equipment) {
+    public ResponseEntity<Equipment> createEquipment(@Valid @RequestBody Equipment equipment) {
         try {
             Equipment created = equipmentService.createEquipment(equipment);
             return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -61,7 +62,7 @@ public class EquipmentController {
 
     // Update equipment
     @PutMapping("/{id}")
-    public ResponseEntity<Equipment> updateEquipment(@PathVariable Long id, @RequestBody Equipment equipment) {
+    public ResponseEntity<Equipment> updateEquipment(@PathVariable Long id, @Valid @RequestBody Equipment equipment) {
         try {
             Equipment updated = equipmentService.updateEquipment(id, equipment);
             return new ResponseEntity<>(updated, HttpStatus.OK);

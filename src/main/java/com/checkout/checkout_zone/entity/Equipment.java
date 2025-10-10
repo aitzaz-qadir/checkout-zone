@@ -2,6 +2,7 @@ package com.checkout.checkout_zone.entity;
 
 // Import statements
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,21 +45,26 @@ public class Equipment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message = "Internal ID is required")
     @Column(unique = true, nullable = false)
     private String internalId;
     private String serialNumber;
+    @NotBlank(message = "Equipment name is required")
     @Column(nullable = false)
     private String name;
     private String model;
     private String brand;
 
     // Example; laptop, camera, monitor
+    @NotBlank(message = "Equipment type is required")
     @Column(nullable = false)
     private String type;
 
+    @NotNull(message = "Condition is required")
     @Enumerated(EnumType.STRING)
     private EquipmentCondition condition;
 
+    @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     private EquipmentStatus status;
 
@@ -66,7 +72,9 @@ public class Equipment {
     private String location;
 
     private LocalDate acquisitionDate;
+    @DecimalMin(value = "0.0", inclusive = false, message = "Purchase price must be greater than 0")
     private BigDecimal purchasePrice;
+    @DecimalMin(value = "0.0", inclusive = true, message = "Current value must be 0 or greater")
     private BigDecimal currentValue;
     private LocalDate warrantyExpiry;
 
