@@ -54,6 +54,9 @@
                 <li class="nav-item" id="managerNav" style="display: none;">
                     <a class="nav-link" href="#" onclick="showPendingRequests()">Pending Approvals</a>
                 </li>
+                <li class="nav-item" id="managerNav2" style="display: none;">
+                    <a class="nav-link" href="#" onclick="showCheckedOut()">Checked Out Items</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" id="loginBtn" onclick="showLogin()">Login</a>
                 </li>
@@ -125,6 +128,15 @@
             <!-- Pending requests will be loaded here -->
         </div>
     </div>
+
+    <!-- Checked Out Items Section -->
+    <div id="checkedOutSection" style="display: none;">
+        <h2 class="mb-4">Currently Checked Out</h2>
+        <div id="checkedOutList">
+            <!-- Checked out items will be loaded here -->
+        </div>
+    </div>
+
 </div>
 
 <!-- Request Checkout Modal -->

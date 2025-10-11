@@ -94,6 +94,7 @@ async function login() {
             // Show manager nav if applicable
             if (data.role === 'EQUIPMENT_MANAGER' || data.role === 'ADMIN') {
                 document.getElementById('managerNav').style.display = 'block';
+                document.getElementById('managerNav2').style.display = 'block';
                 document.getElementById('addEquipmentBtn').style.display = 'block';
             }
 
@@ -118,6 +119,7 @@ function logout() {
     document.getElementById('userInfo').style.display = 'none';
     document.getElementById('logoutBtn').style.display = 'none';
     document.getElementById('managerNav').style.display = 'none';
+    document.getElementById('managerNav2').style.display = 'none';
     document.getElementById('addEquipmentBtn').style.display = 'none';
 
     showEquipment();
@@ -297,57 +299,149 @@ async function loadMyRequests() {
 // Load pending approvals (for managers)
 async function loadPendingApprovals() {
     try {
-        const response = await fetch('/api/checkout/requests/pending', {
+        // Load both pending AND approved requests
+        const response = await fetch('/api/checkout/requests', {
             headers: getAuthHeaders()
         });
 
-        const requests = await response.json();
+        const allRequests = await response.json();
+
+        // Filter for pending and approved requests
+        const pendingRequests = allRequests.filter(r => r.status === 'PENDING');
+        const approvedRequests = allRequests.filter(r => r.status === 'APPROVED');
+
         const approvalsList = document.getElementById('approvalsList');
         approvalsList.innerHTML = '';
 
-        if (requests.length === 0) {
-            approvalsList.innerHTML = '<p class="text-center">No pending requests</p>';
-            return;
-        }
+        // Show Pending Requests
+        if (pendingRequests.length > 0) {
+            approvalsList.innerHTML += '<h4 class="mt-3">Pending Approval</h4>';
 
-        requests.forEach(request => {
-            const equipmentNames = request.equipmentItems.map(e => e.name).join(', ');
+            pendingRequests.forEach(request => {
+                const equipmentNames = request.equipmentItems.map(e => e.name).join(', ');
 
-            const card = `
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="card-title">Request #${request.id}</h5>
-                                <p class="card-text">
-                                    <strong>Requested by:</strong> ${request.requestedBy.firstName} ${request.requestedBy.lastName} (${request.requestedBy.username})<br>
-                                    <strong>Department:</strong> ${request.requestedBy.department || 'N/A'}<br>
-                                    <strong>Equipment:</strong> ${equipmentNames}<br>
-                                    <strong>Purpose:</strong> ${request.purpose}<br>
-                                    <strong>Needed By:</strong> ${request.neededByDate || 'N/A'}<br>
-                                    <strong>Requested:</strong> ${request.requestedDate}
-                                </p>
-                                <div class="mt-3">
-                                    <textarea class="form-control mb-2" id="notes-${request.id}"
-                                        placeholder="Add approval/rejection notes (optional)" rows="2"></textarea>
-                                    <button class="btn btn-success btn-sm me-2" onclick="approveRequest(${request.id})">
-                                        <i class="bi bi-check-circle"></i> Approve
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="rejectRequest(${request.id})">
-                                        <i class="bi bi-x-circle"></i> Reject
-                                    </button>
+                const card = `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title">Request #${request.id}</h5>
+                                    <p class="card-text">
+                                        <strong>Requested by:</strong> ${request.requestedBy.firstName} ${request.requestedBy.lastName} (${request.requestedBy.username})<br>
+                                        <strong>Department:</strong> ${request.requestedBy.department || 'N/A'}<br>
+                                        <strong>Equipment:</strong> ${equipmentNames}<br>
+                                        <strong>Purpose:</strong> ${request.purpose}<br>
+                                        <strong>Needed By:</strong> ${request.neededByDate || 'N/A'}<br>
+                                        <strong>Requested:</strong> ${request.requestedDate}
+                                    </p>
+                                    <div class="mt-3">
+                                        <textarea class="form-control mb-2" id="notes-${request.id}"
+                                            placeholder="Add approval/rejection notes (optional)" rows="2"></textarea>
+                                        <button class="btn btn-success btn-sm me-2" onclick="approveRequest(${request.id})">
+                                            <i class="bi bi-check-circle"></i> Approve
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="rejectRequest(${request.id})">
+                                            <i class="bi bi-x-circle"></i> Reject
+                                        </button>
+                                    </div>
                                 </div>
+                                <span class="badge bg-warning">PENDING</span>
                             </div>
-                            <span class="badge bg-warning">PENDING</span>
                         </div>
                     </div>
-                </div>
-            `;
-            approvalsList.innerHTML += card;
-        });
+                `;
+                approvalsList.innerHTML += card;
+            });
+        }
+
+        // Show Approved Requests (ready to fulfill)
+        if (approvedRequests.length > 0) {
+            approvalsList.innerHTML += '<h4 class="mt-4">Ready to Fulfill</h4>';
+
+            approvedRequests.forEach(request => {
+                const equipmentNames = request.equipmentItems.map(e => e.name).join(', ');
+
+                const card = `
+                    <div class="card mb-3 border-success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title">Request #${request.id}</h5>
+                                    <p class="card-text">
+                                        <strong>Requested by:</strong> ${request.requestedBy.firstName} ${request.requestedBy.lastName}<br>
+                                        <strong>Equipment:</strong> ${equipmentNames}<br>
+                                        <strong>Purpose:</strong> ${request.purpose}<br>
+                                        <strong>Approved by:</strong> ${request.approvedBy ? request.approvedBy.username : 'N/A'}<br>
+                                        ${request.approvalNotes ? `<strong>Notes:</strong> ${request.approvalNotes}<br>` : ''}
+                                    </p>
+                                    <div class="mt-3">
+                                        <label class="form-label">Expected Return Date:</label>
+                                        <input type="date" class="form-control mb-2" id="returnDate-${request.id}"
+                                            value="${getDefaultReturnDate()}" min="${new Date().toISOString().split('T')[0]}">
+                                        <button class="btn btn-primary btn-sm" onclick="fulfillRequest(${request.id})">
+                                            <i class="bi bi-box-arrow-right"></i> Hand Out Equipment
+                                        </button>
+                                    </div>
+                                </div>
+                                <span class="badge bg-success">APPROVED</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                approvalsList.innerHTML += card;
+            });
+        }
+
+        if (pendingRequests.length === 0 && approvedRequests.length === 0) {
+            approvalsList.innerHTML = '<p class="text-center">No pending or approved requests</p>';
+        }
+
     } catch (error) {
         console.error('Error loading pending approvals:', error);
-        document.getElementById('approvalsList').innerHTML = '<p class="text-danger">Failed to load pending requests</p>';
+        document.getElementById('approvalsList').innerHTML = '<p class="text-danger">Failed to load requests</p>';
+    }
+}
+
+// Helper function to get default return date (7 days from now)
+function getDefaultReturnDate() {
+    const date = new Date();
+    date.setDate(date.getDate() + 7);
+    return date.toISOString().split('T')[0];
+}
+
+// Fulfill request (hand out equipment)
+async function fulfillRequest(requestId) {
+    const returnDate = document.getElementById(`returnDate-${requestId}`).value;
+
+    if (!returnDate) {
+        alert('Please select an expected return date');
+        return;
+    }
+
+    if (!confirm('Are you sure you want to hand out this equipment?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/checkout/requests/${requestId}/fulfill`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                managerId: currentUser.id,
+                expectedReturnDate: returnDate
+            })
+        });
+
+        if (response.ok) {
+            alert('Equipment handed out successfully!');
+            loadPendingApprovals();
+        } else {
+            const error = await response.json();
+            alert('Failed to fulfill request: ' + (error.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error fulfilling request:', error);
+        alert('Failed to fulfill request');
     }
 }
 
@@ -434,4 +528,75 @@ function getAuthHeaders() {
     return {
         'Content-Type': 'application/json'
     };
+}
+
+// Show checked out items
+function showCheckedOut() {
+    if (!currentUser) {
+        alert('Please login first');
+        showLogin();
+        return;
+    }
+    hideAllSections();
+    document.getElementById('checkedOutSection').style.display = 'block';
+    loadCheckedOut();
+}
+
+// Update hideAllSections to include the new section
+function hideAllSections() {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('equipmentSection').style.display = 'none';
+    document.getElementById('requestsSection').style.display = 'none';
+    document.getElementById('approvalsSection').style.display = 'none';
+    document.getElementById('checkedOutSection').style.display = 'none';
+}
+
+// Load checked out items
+async function loadCheckedOut() {
+    try {
+        const response = await fetch('/api/checkout/records/current', {
+            headers: getAuthHeaders()
+        });
+
+        const records = await response.json();
+        const checkedOutList = document.getElementById('checkedOutList');
+        checkedOutList.innerHTML = '';
+
+        if (records.length === 0) {
+            checkedOutList.innerHTML = '<p class="text-center">No equipment currently checked out</p>';
+            return;
+        }
+
+        records.forEach(record => {
+            const isOverdue = new Date(record.expectedReturnDate) < new Date();
+
+            const card = `
+                <div class="card mb-3 ${isOverdue ? 'border-danger' : ''}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">${record.equipment.name}</h5>
+                                <p class="card-text">
+                                    <strong>Checked out by:</strong> ${record.user.firstName} ${record.user.lastName} (${record.user.username})<br>
+                                    <strong>Department:</strong> ${record.user.department || 'N/A'}<br>
+                                    <strong>Checkout Date:</strong> ${record.checkoutDate}<br>
+                                    <strong>Expected Return:</strong> ${record.expectedReturnDate}<br>
+                                    <strong>Condition at Checkout:</strong> ${record.conditionAtCheckout}<br>
+                                    <strong>Handed out by:</strong> ${record.checkedOutByManager ? record.checkedOutByManager.username : 'N/A'}
+                                </p>
+                                ${isOverdue ? '<span class="badge bg-danger mb-2">OVERDUE</span><br>' : ''}
+                                <button class="btn btn-warning btn-sm mt-2" onclick="showReturnModal(${record.id}, '${record.equipment.name}')">
+                                    <i class="bi bi-box-arrow-left"></i> Process Return
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            checkedOutList.innerHTML += card;
+        });
+    } catch (error) {
+        console.error('Error loading checked out items:', error);
+        document.getElementById('checkedOutList').innerHTML = '<p class="text-danger">Failed to load checked out items</p>';
+    }
 }
