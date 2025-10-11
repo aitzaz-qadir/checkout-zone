@@ -3,6 +3,7 @@ let currentUser = null;
 let returnModal = null;
 let requestModal = null;
 let selectedEquipment = null;
+let addEquipmentModal = null;
 
 // On page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -11,12 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize modals only if they exist
     const requestModalElement = document.getElementById('requestModal');
     const returnModalElement = document.getElementById('returnModal');
+    const addEquipmentModalElement = document.getElementById('addEquipmentModal');
 
     if (requestModalElement) {
         requestModal = new bootstrap.Modal(requestModalElement);
     }
     if (returnModalElement) {
         returnModal = new bootstrap.Modal(returnModalElement);
+    }
+    if (addEquipmentModalElement) {
+        addEquipmentModal = new bootstrap.Modal(addEquipmentModalElement);
     }
 
     // Setup login form
@@ -528,7 +533,12 @@ async function rejectRequest(requestId) {
 }
 
 function showAddEquipmentModal() {
-    alert('Add equipment functionality coming soon!');
+    // Clear form
+    document.getElementById('addEquipmentForm').reset();
+    document.getElementById('addEquipmentError').style.display = 'none';
+    document.getElementById('addEquipmentSuccess').style.display = 'none';
+
+    addEquipmentModal.show();
 }
 
 // Helper function to make authenticated requests
@@ -673,5 +683,61 @@ async function submitReturn() {
         console.error('Error processing return:', error);
         document.getElementById('returnError').textContent = 'Failed to process return';
         document.getElementById('returnError').style.display = 'block';
+    }
+}
+
+// Submit new equipment
+async function submitAddEquipment() {
+    // Get form values
+    const equipment = {
+        internalId: document.getElementById('equipInternalId').value,
+        serialNumber: document.getElementById('equipSerialNumber').value,
+        name: document.getElementById('equipName').value,
+        type: document.getElementById('equipType').value,
+        brand: document.getElementById('equipBrand').value,
+        model: document.getElementById('equipModel').value,
+        condition: document.getElementById('equipCondition').value,
+        status: 'AVAILABLE',  // New equipment is always available
+        location: document.getElementById('equipLocation').value,
+        purchasePrice: document.getElementById('equipPurchasePrice').value || null,
+        currentValue: document.getElementById('equipCurrentValue').value || null,
+        acquisitionDate: document.getElementById('equipAcquisitionDate').value || null,
+        warrantyExpiry: document.getElementById('equipWarrantyExpiry').value || null,
+        notes: document.getElementById('equipNotes').value
+    };
+
+    // Basic validation
+    if (!equipment.internalId || !equipment.name || !equipment.type || !equipment.condition) {
+        alert('Please fill in all required fields (marked with *)');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/equipment', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(equipment)
+        });
+
+        if (response.ok) {
+            document.getElementById('addEquipmentSuccess').textContent = 'Equipment added successfully!';
+            document.getElementById('addEquipmentSuccess').style.display = 'block';
+            document.getElementById('addEquipmentError').style.display = 'none';
+
+            // Close modal and refresh after 2 seconds
+            setTimeout(() => {
+                addEquipmentModal.hide();
+                showEquipment();
+            }, 2000);
+        } else {
+            const error = await response.json();
+            document.getElementById('addEquipmentError').textContent = error.error || 'Failed to add equipment';
+            document.getElementById('addEquipmentError').style.display = 'block';
+            document.getElementById('addEquipmentSuccess').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error adding equipment:', error);
+        document.getElementById('addEquipmentError').textContent = 'Failed to add equipment';
+        document.getElementById('addEquipmentError').style.display = 'block';
     }
 }
