@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 // Main application class
 public class CheckoutZoneApplication {
 
-	public static void main(String[] args) {
+	static void main(String[] args) {
 		SpringApplication.run(CheckoutZoneApplication.class, args);
 	}
 
