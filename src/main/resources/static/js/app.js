@@ -1,5 +1,6 @@
 // Global variables
 let currentUser = null;
+let returnModal = null;
 let requestModal = null;
 let selectedEquipment = null;
 
@@ -7,18 +8,32 @@ let selectedEquipment = null;
 document.addEventListener('DOMContentLoaded', function() {
     loadEquipment();
 
-    // Initialize modal
-    requestModal = new bootstrap.Modal(document.getElementById('requestModal'));
+    // Initialize modals only if they exist
+    const requestModalElement = document.getElementById('requestModal');
+    const returnModalElement = document.getElementById('returnModal');
+
+    if (requestModalElement) {
+        requestModal = new bootstrap.Modal(requestModalElement);
+    }
+    if (returnModalElement) {
+        returnModal = new bootstrap.Modal(returnModalElement);
+    }
 
     // Setup login form
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        login();
-    });
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            login();
+        });
+    }
 
     // Set minimum date for needed by date (today)
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('requestNeededBy').setAttribute('min', today);
+    const neededByInput = document.getElementById('requestNeededBy');
+    if (neededByInput) {
+        const today = new Date().toISOString().split('T')[0];
+        neededByInput.setAttribute('min', today);
+    }
 });
 
 // Show/Hide sections
@@ -598,5 +613,65 @@ async function loadCheckedOut() {
     } catch (error) {
         console.error('Error loading checked out items:', error);
         document.getElementById('checkedOutList').innerHTML = '<p class="text-danger">Failed to load checked out items</p>';
+    }
+}
+
+// Show return modal
+function showReturnModal(recordId, equipmentName) {
+    document.getElementById('returnRecordId').value = recordId;
+    document.getElementById('returnEquipmentName').value = equipmentName;
+    document.getElementById('returnCondition').value = '';
+    document.getElementById('returnNotes').value = '';
+
+    // Hide any previous messages
+    document.getElementById('returnError').style.display = 'none';
+    document.getElementById('returnSuccess').style.display = 'none';
+
+    returnModal.show();
+}
+
+// Submit return
+async function submitReturn() {
+    const recordId = document.getElementById('returnRecordId').value;
+    const condition = document.getElementById('returnCondition').value;
+    const notes = document.getElementById('returnNotes').value || 'Equipment returned';
+
+    if (!condition) {
+        alert('Please select the equipment condition');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/checkout/records/${recordId}/return`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                managerId: currentUser.id,
+                condition: condition,
+                notes: notes
+            })
+        });
+
+        if (response.ok) {
+            document.getElementById('returnSuccess').textContent = 'Equipment returned successfully!';
+            document.getElementById('returnSuccess').style.display = 'block';
+            document.getElementById('returnError').style.display = 'none';
+
+            // Close modal and refresh after 2 seconds
+            setTimeout(() => {
+                returnModal.hide();
+                loadCheckedOut();
+                loadEquipment(); // Refresh equipment list too
+            }, 2000);
+        } else {
+            const error = await response.json();
+            document.getElementById('returnError').textContent = error.error || 'Failed to process return';
+            document.getElementById('returnError').style.display = 'block';
+            document.getElementById('returnSuccess').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error processing return:', error);
+        document.getElementById('returnError').textContent = 'Failed to process return';
+        document.getElementById('returnError').style.display = 'block';
     }
 }
