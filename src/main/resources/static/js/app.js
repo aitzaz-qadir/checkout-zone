@@ -294,9 +294,128 @@ async function loadMyRequests() {
     }
 }
 
-// Load pending approvals
-function loadPendingApprovals() {
-    document.getElementById('approvalsList').innerHTML = '<p>Coming soon...</p>';
+// Load pending approvals (for managers)
+async function loadPendingApprovals() {
+    try {
+        const response = await fetch('/api/checkout/requests/pending', {
+            headers: getAuthHeaders()
+        });
+
+        const requests = await response.json();
+        const approvalsList = document.getElementById('approvalsList');
+        approvalsList.innerHTML = '';
+
+        if (requests.length === 0) {
+            approvalsList.innerHTML = '<p class="text-center">No pending requests</p>';
+            return;
+        }
+
+        requests.forEach(request => {
+            const equipmentNames = request.equipmentItems.map(e => e.name).join(', ');
+
+            const card = `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">Request #${request.id}</h5>
+                                <p class="card-text">
+                                    <strong>Requested by:</strong> ${request.requestedBy.firstName} ${request.requestedBy.lastName} (${request.requestedBy.username})<br>
+                                    <strong>Department:</strong> ${request.requestedBy.department || 'N/A'}<br>
+                                    <strong>Equipment:</strong> ${equipmentNames}<br>
+                                    <strong>Purpose:</strong> ${request.purpose}<br>
+                                    <strong>Needed By:</strong> ${request.neededByDate || 'N/A'}<br>
+                                    <strong>Requested:</strong> ${request.requestedDate}
+                                </p>
+                                <div class="mt-3">
+                                    <textarea class="form-control mb-2" id="notes-${request.id}"
+                                        placeholder="Add approval/rejection notes (optional)" rows="2"></textarea>
+                                    <button class="btn btn-success btn-sm me-2" onclick="approveRequest(${request.id})">
+                                        <i class="bi bi-check-circle"></i> Approve
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="rejectRequest(${request.id})">
+                                        <i class="bi bi-x-circle"></i> Reject
+                                    </button>
+                                </div>
+                            </div>
+                            <span class="badge bg-warning">PENDING</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            approvalsList.innerHTML += card;
+        });
+    } catch (error) {
+        console.error('Error loading pending approvals:', error);
+        document.getElementById('approvalsList').innerHTML = '<p class="text-danger">Failed to load pending requests</p>';
+    }
+}
+
+// Approve request
+async function approveRequest(requestId) {
+    const notes = document.getElementById(`notes-${requestId}`).value || 'Approved';
+
+    if (!confirm('Are you sure you want to approve this request?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/checkout/requests/${requestId}/approve`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                approverId: currentUser.id,
+                notes: notes
+            })
+        });
+
+        if (response.ok) {
+            alert('Request approved successfully!');
+            loadPendingApprovals();
+        } else {
+            const error = await response.json();
+            alert('Failed to approve request: ' + (error.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error approving request:', error);
+        alert('Failed to approve request');
+    }
+}
+
+// Reject request
+async function rejectRequest(requestId) {
+    const notes = document.getElementById(`notes-${requestId}`).value;
+
+    if (!notes) {
+        alert('Please provide a reason for rejection');
+        return;
+    }
+
+    if (!confirm('Are you sure you want to reject this request?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/checkout/requests/${requestId}/reject`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                approverId: currentUser.id,
+                notes: notes
+            })
+        });
+
+        if (response.ok) {
+            alert('Request rejected');
+            loadPendingApprovals();
+        } else {
+            const error = await response.json();
+            alert('Failed to reject request: ' + (error.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error rejecting request:', error);
+        alert('Failed to reject request');
+    }
 }
 
 function showAddEquipmentModal() {
