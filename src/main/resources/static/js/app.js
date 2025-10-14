@@ -5,6 +5,7 @@ import * as Equipment from './modules/equipment.js';
 import * as Requests from './modules/requests.js';
 import * as Approvals from './modules/approvals.js';
 import * as Returns from './modules/returns.js';
+import * as Dashboard from './modules/dashboard.js';
 import { getAuthHeaders, getDefaultReturnDate } from './utils/helpers.js';
 import ThemeManager from './utils/theme.js';
 
@@ -16,7 +17,8 @@ let addEquipmentModal = null;
 
 // On page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Load equipment on initial page load
+    // Load dashboard and equipment on initial page load
+    Dashboard.loadDashboard();
     Equipment.loadEquipment(currentUser);
 
     // Initialize modals only if they exist
@@ -107,7 +109,10 @@ window.requestEquipment = function(equipment) {
 };
 
 window.submitRequest = function() {
-    Requests.submitRequest(currentUser, getAuthHeaders, () => Equipment.loadEquipment(currentUser));
+    Requests.submitRequest(currentUser, getAuthHeaders, () => {
+        Equipment.loadEquipment(currentUser);
+        Dashboard.loadDashboard(); // Refresh dashboard after new request
+    });
 };
 
 window.showAddEquipmentModal = function() {
@@ -115,20 +120,31 @@ window.showAddEquipmentModal = function() {
 };
 
 window.submitAddEquipment = function() {
-    Equipment.submitAddEquipment(getAuthHeaders);
+    Equipment.submitAddEquipment(getAuthHeaders, () => {
+        Dashboard.loadDashboard(); // Refresh dashboard after adding equipment
+    });
 };
 
 // Approvals functions - exposed globally
 window.approveRequest = function(requestId) {
-    Approvals.approveRequest(requestId, currentUser, getAuthHeaders, () => Approvals.loadPendingApprovals(getAuthHeaders, getDefaultReturnDate));
+    Approvals.approveRequest(requestId, currentUser, getAuthHeaders, () => {
+        Approvals.loadPendingApprovals(getAuthHeaders, getDefaultReturnDate);
+        Dashboard.loadDashboard(); // Refresh dashboard after approval
+    });
 };
 
 window.rejectRequest = function(requestId) {
-    Approvals.rejectRequest(requestId, currentUser, getAuthHeaders, () => Approvals.loadPendingApprovals(getAuthHeaders, getDefaultReturnDate));
+    Approvals.rejectRequest(requestId, currentUser, getAuthHeaders, () => {
+        Approvals.loadPendingApprovals(getAuthHeaders, getDefaultReturnDate);
+        Dashboard.loadDashboard(); // Refresh dashboard after rejection
+    });
 };
 
 window.fulfillRequest = function(requestId) {
-    Approvals.fulfillRequest(requestId, currentUser, getAuthHeaders, () => Approvals.loadPendingApprovals(getAuthHeaders, getDefaultReturnDate));
+    Approvals.fulfillRequest(requestId, currentUser, getAuthHeaders, () => {
+        Approvals.loadPendingApprovals(getAuthHeaders, getDefaultReturnDate);
+        Dashboard.loadDashboard(); // Refresh dashboard after fulfillment
+    });
 };
 
 // Returns functions - exposed globally
@@ -137,5 +153,10 @@ window.showReturnModal = function(recordId, equipmentName) {
 };
 
 window.submitReturn = function() {
-    Returns.submitReturn(currentUser, getAuthHeaders, () => Returns.loadCheckedOut(getAuthHeaders), () => Equipment.loadEquipment(currentUser));
+    Returns.submitReturn(currentUser, getAuthHeaders, () => Returns.loadCheckedOut(getAuthHeaders), () => {
+        Equipment.loadEquipment(currentUser);
+        Dashboard.loadDashboard(); // Refresh dashboard after return
+    });
 };
+
+// Theme toggle function is handled by the ThemeManager utility - no need to redefine it here

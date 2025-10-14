@@ -62,7 +62,7 @@ export function showAddEquipmentModal() {
     addEquipmentModal.show();
 }
 
-export async function submitAddEquipment(getAuthHeaders) {
+export async function submitAddEquipment(getAuthHeaders, callback) {
     // Get form values
     const equipment = {
         internalId: document.getElementById('equipInternalId').value,
@@ -103,6 +103,7 @@ export async function submitAddEquipment(getAuthHeaders) {
             setTimeout(() => {
                 addEquipmentModal.hide();
                 window.showEquipment();
+                if (callback) callback(); // Call the callback if provided
             }, 2000);
         } else {
             const error = await response.json();
@@ -116,4 +117,3 @@ export async function submitAddEquipment(getAuthHeaders) {
         document.getElementById('addEquipmentError').style.display = 'block';
     }
 }
-

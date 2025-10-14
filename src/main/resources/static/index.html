@@ -86,6 +86,37 @@
 
     <!-- Equipment Section -->
     <div id="equipmentSection">
+        <!-- Dashboard Section -->
+        <div class="row mb-4" id="dashboardSection">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-box-seam fs-1 text-success"></i>
+                        <h4 class="card-title mt-2" id="availableCount">0</h4>
+                        <p class="card-text text-muted">Available Equipment</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-arrow-right-circle fs-1 text-warning"></i>
+                        <h4 class="card-title mt-2" id="checkedOutCount">0</h4>
+                        <p class="card-text text-muted">Checked Out</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-clock-history fs-1 text-info"></i>
+                        <h4 class="card-title mt-2" id="pendingCount">0</h4>
+                        <p class="card-text text-muted">Pending Requests</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Available Equipment</h2>
             <button class="btn btn-primary" id="addEquipmentBtn" style="display: none;" onclick="showAddEquipmentModal()">

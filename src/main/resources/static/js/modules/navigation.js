@@ -1,4 +1,5 @@
 // Navigation module
+import * as Dashboard from './dashboard.js';
 
 export function showLogin() {
     hideAllSections();
@@ -8,6 +9,8 @@ export function showLogin() {
 export function showEquipment() {
     hideAllSections();
     document.getElementById('equipmentSection').style.display = 'block';
+    // Refresh dashboard when showing equipment
+    Dashboard.loadDashboard();
 }
 
 export function showMyRequests(currentUser) {
@@ -47,4 +50,3 @@ export function hideAllSections() {
     document.getElementById('approvalsSection').style.display = 'none';
     document.getElementById('checkedOutSection').style.display = 'none';
 }
-
