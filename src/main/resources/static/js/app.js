@@ -6,6 +6,7 @@ import * as Requests from './modules/requests.js';
 import * as Approvals from './modules/approvals.js';
 import * as Returns from './modules/returns.js';
 import { getAuthHeaders, getDefaultReturnDate } from './utils/helpers.js';
+import ThemeManager from './utils/theme.js';
 
 // Global state
 let currentUser = null;
@@ -138,4 +139,3 @@ window.showReturnModal = function(recordId, equipmentName) {
 window.submitReturn = function() {
     Returns.submitReturn(currentUser, getAuthHeaders, () => Returns.loadCheckedOut(getAuthHeaders), () => Equipment.loadEquipment(currentUser));
 };
-
