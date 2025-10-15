@@ -17,9 +17,15 @@ let addEquipmentModal = null;
 
 // On page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize authentication state first
+    Auth.initializeAuth();
+
     // Load dashboard and equipment on initial page load
     Dashboard.loadDashboard();
     Equipment.loadEquipment(currentUser);
+
+    // Initialize equipment view mode from localStorage
+    Equipment.initializeViewMode();
 
     // Initialize modals only if they exist
     const requestModalElement = document.getElementById('requestModal');
@@ -123,6 +129,11 @@ window.submitAddEquipment = function() {
     Equipment.submitAddEquipment(getAuthHeaders, () => {
         Dashboard.loadDashboard(); // Refresh dashboard after adding equipment
     });
+};
+
+// View toggle function - exposed globally
+window.toggleView = function(viewMode) {
+    Equipment.toggleView(viewMode);
 };
 
 // Approvals functions - exposed globally

@@ -39,6 +39,9 @@ export async function login() {
             document.getElementById('logoutBtn').style.display = 'block';
             document.getElementById('userName').textContent = data.username;
 
+            // Show My Requests button when user is logged in
+            document.getElementById('myRequestsNav').style.display = 'block';
+
             // Show manager nav if applicable
             if (data.role === 'EQUIPMENT_MANAGER' || data.role === 'ADMIN') {
                 document.getElementById('managerNav').style.display = 'block';
@@ -70,5 +73,37 @@ export function logout() {
     document.getElementById('managerNav').style.display = 'none';
     document.getElementById('managerNav2').style.display = 'none';
     document.getElementById('addEquipmentBtn').style.display = 'none';
+
+    // Hide My Requests button on logout
+    document.getElementById('myRequestsNav').style.display = 'none';
 }
 
+// Initialize auth state on page load
+export function initializeAuth() {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+        try {
+            const userData = JSON.parse(storedUser);
+            currentUser = userData;
+
+            // Update UI for logged-in user
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('userName').textContent = userData.username;
+            document.getElementById('myRequestsNav').style.display = 'block';
+
+            // Show manager nav if applicable
+            if (userData.role === 'EQUIPMENT_MANAGER' || userData.role === 'ADMIN') {
+                document.getElementById('managerNav').style.display = 'block';
+                document.getElementById('managerNav2').style.display = 'block';
+                document.getElementById('addEquipmentBtn').style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error parsing stored user data:', error);
+            // Clear invalid data
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('authCredentials');
+        }
+    }
+}

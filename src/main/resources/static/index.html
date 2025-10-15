@@ -27,7 +27,7 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="#" onclick="showEquipment()">Equipment</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" id="myRequestsNav" style="display: none;">
                     <a class="nav-link" href="#" onclick="showMyRequests()">My Requests</a>
                 </li>
                 <li class="nav-item" id="managerNav" style="display: none;">
@@ -119,9 +119,20 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Available Equipment</h2>
-            <button class="btn btn-primary" id="addEquipmentBtn" style="display: none;" onclick="showAddEquipmentModal()">
-                <i class="bi bi-plus-circle"></i> Add Equipment
-            </button>
+            <div class="d-flex align-items-center gap-3">
+                <!-- View Toggle Buttons -->
+                <div class="btn-group" role="group" aria-label="View toggle">
+                    <button type="button" class="btn btn-outline-secondary btn-sm active" id="gridViewBtn" onclick="toggleView('grid')">
+                        <i class="bi bi-grid-3x3-gap"></i> Grid
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="listViewBtn" onclick="toggleView('list')">
+                        <i class="bi bi-list-ul"></i> List
+                    </button>
+                </div>
+                <button class="btn btn-primary" id="addEquipmentBtn" style="display: none;" onclick="showAddEquipmentModal()">
+                    <i class="bi bi-plus-circle"></i> Add Equipment
+                </button>
+            </div>
         </div>
         <div class="row" id="equipmentList">
             <!-- Equipment cards will be loaded here -->
