@@ -3,9 +3,28 @@
 let addEquipmentModal = null;
 let currentViewMode = 'grid'; // Default to grid view
 let currentEquipmentData = []; // Store equipment data for view switching
+let allEquipmentData = []; // Store all equipment for filtering
 
 export function setAddEquipmentModal(modal) {
     addEquipmentModal = modal;
+}
+
+// Equipment filtering by type
+export function filterEquipmentByType() {
+    const selectedType = document.getElementById('equipmentTypeFilter').value;
+    const filteredEquipment = selectedType
+        ? allEquipmentData.filter(item => item.type === selectedType)
+        : allEquipmentData;
+
+    currentEquipmentData = filteredEquipment;
+
+    // Re-render with filtered data
+    const currentUser = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')) : null;
+    if (currentViewMode === 'grid') {
+        renderGridView(filteredEquipment, currentUser);
+    } else {
+        renderListView(filteredEquipment, currentUser);
+    }
 }
 
 // Function to get equipment type icon
@@ -133,6 +152,7 @@ export async function loadEquipment(currentUser) {
 
         // Store equipment data for view switching
         currentEquipmentData = equipment;
+        allEquipmentData = equipment; // Store all equipment data for filtering
 
         // Render based on current view mode
         if (currentViewMode === 'grid') {

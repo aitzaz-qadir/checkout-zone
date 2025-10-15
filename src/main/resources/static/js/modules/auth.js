@@ -11,6 +11,89 @@ export function setCurrentUser(user) {
     currentUser = user;
 }
 
+export async function register() {
+    // Get form values
+    const username = document.getElementById('registerUsername').value;
+    const email = document.getElementById('registerEmail').value;
+    const firstName = document.getElementById('registerFirstName').value;
+    const lastName = document.getElementById('registerLastName').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+    const department = document.getElementById('registerDepartment').value;
+    const employeeId = document.getElementById('registerEmployeeId').value;
+    const role = document.getElementById('registerRole').value;
+
+    // Clear previous errors
+    document.getElementById('registerError').style.display = 'none';
+    document.getElementById('registerSuccess').style.display = 'none';
+
+    // Client-side validation
+    if (password !== confirmPassword) {
+        document.getElementById('registerError').textContent = 'Passwords do not match';
+        document.getElementById('registerError').style.display = 'block';
+        return false;
+    }
+
+    if (password.length < 6) {
+        document.getElementById('registerError').textContent = 'Password must be at least 6 characters';
+        document.getElementById('registerError').style.display = 'block';
+        return false;
+    }
+
+    if (username.length < 3 || username.length > 50) {
+        document.getElementById('registerError').textContent = 'Username must be between 3 and 50 characters';
+        document.getElementById('registerError').style.display = 'block';
+        return false;
+    }
+
+    try {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                password: password,
+                department: department || null,
+                employeeId: employeeId || null,
+                role: role
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+
+            // Show success message
+            document.getElementById('registerSuccess').textContent = 'Registration successful! Please login with your new account.';
+            document.getElementById('registerSuccess').style.display = 'block';
+
+            // Clear the form
+            document.getElementById('registerForm').reset();
+
+            // Redirect to login after a short delay
+            setTimeout(() => {
+                showLogin();
+            }, 2000);
+
+            return data;
+        } else {
+            const errorData = await response.json();
+            document.getElementById('registerError').textContent = errorData.error || 'Registration failed';
+            document.getElementById('registerError').style.display = 'block';
+            return null;
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        document.getElementById('registerError').textContent = 'Registration failed. Please try again.';
+        document.getElementById('registerError').style.display = 'block';
+        return null;
+    }
+}
+
 export async function login() {
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;

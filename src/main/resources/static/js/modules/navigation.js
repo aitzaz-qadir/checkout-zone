@@ -6,6 +6,11 @@ export function showLogin() {
     document.getElementById('loginSection').style.display = 'block';
 }
 
+export function showRegister() {
+    hideAllSections();
+    document.getElementById('registerSection').style.display = 'block';
+}
+
 export function showEquipment() {
     hideAllSections();
     document.getElementById('equipmentSection').style.display = 'block';
@@ -45,6 +50,7 @@ export function showCheckedOut(currentUser) {
 
 export function hideAllSections() {
     document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('registerSection').style.display = 'none';
     document.getElementById('equipmentSection').style.display = 'none';
     document.getElementById('requestsSection').style.display = 'none';
     document.getElementById('approvalsSection').style.display = 'none';

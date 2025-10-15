@@ -54,6 +54,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Setup registration form
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleRegister();
+        });
+    }
+
     // Set minimum date for needed by date (today)
     const neededByInput = document.getElementById('requestNeededBy');
     if (neededByInput) {
@@ -72,9 +81,23 @@ async function handleLogin() {
     }
 }
 
+// Registration handler
+async function handleRegister() {
+    const user = await Auth.register();
+    if (user) {
+        currentUser = user;
+        Auth.setCurrentUser(user);
+        showEquipment();
+    }
+}
+
 // Navigation functions - exposed globally
 window.showLogin = function() {
     Navigation.showLogin();
+};
+
+window.showRegister = function() {
+    Navigation.showRegister();
 };
 
 window.showEquipment = function() {
@@ -129,6 +152,11 @@ window.submitAddEquipment = function() {
     Equipment.submitAddEquipment(getAuthHeaders, () => {
         Dashboard.loadDashboard(); // Refresh dashboard after adding equipment
     });
+};
+
+// Equipment filtering function - exposed globally
+window.filterEquipmentByType = function() {
+    Equipment.filterEquipmentByType();
 };
 
 // View toggle function - exposed globally

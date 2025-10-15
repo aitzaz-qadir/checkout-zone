@@ -39,10 +39,16 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#" id="loginBtn" onclick="showLogin()">Login</a>
                 </li>
+                <li class="nav-item" id="registerNav">
+                    <a class="nav-link" href="#" onclick="showRegister()">Register</a>
+                </li>
                 <li class="nav-item" id="userInfo" style="display: none;">
                         <span class="nav-link">
                             <i class="bi bi-person-circle"></i> <span id="userName"></span>
                         </span>
+                </li>
+                <li class="nav-item" id="adminNav" style="display: none;">
+                    <a class="nav-link" href="#" onclick="showUserManagement()">User Management</a>
                 </li>
                 <li class="nav-item" id="logoutBtn" style="display: none;">
                     <a class="nav-link" href="#" onclick="logout()">Logout</a>
@@ -78,6 +84,87 @@
                             <button type="submit" class="btn btn-primary w-100">Login</button>
                         </form>
                         <div id="loginError" class="alert alert-danger mt-3" style="display: none;"></div>
+                        <div class="text-center mt-3">
+                            <p>Don't have an account? <a href="#" onclick="showRegister()">Register here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Section -->
+    <div id="registerSection" style="display: none;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title text-center mb-4">Register</h3>
+                        <form id="registerForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Username *</label>
+                                    <input type="text" class="form-control" id="registerUsername" required
+                                           placeholder="Enter username (3-50 characters)">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="registerEmail" required
+                                           placeholder="Enter your email address">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" id="registerFirstName" required
+                                           placeholder="Enter first name">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" id="registerLastName" required
+                                           placeholder="Enter last name">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Password *</label>
+                                    <input type="password" class="form-control" id="registerPassword" required
+                                           placeholder="Enter password (min 6 characters)">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Confirm Password *</label>
+                                    <input type="password" class="form-control" id="registerConfirmPassword" required
+                                           placeholder="Confirm your password">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Department</label>
+                                    <input type="text" class="form-control" id="registerDepartment"
+                                           placeholder="e.g., IT, Marketing, Sales">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Employee ID</label>
+                                    <input type="text" class="form-control" id="registerEmployeeId"
+                                           placeholder="e.g., EMP001">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Role *</label>
+                                <select class="form-select" id="registerRole" required>
+                                    <option value="">Select your role...</option>
+                                    <option value="EMPLOYEE">Employee</option>
+                                    <option value="EQUIPMENT_MANAGER">Equipment Manager</option>
+                                    <option value="ADMIN">Administrator</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Register</button>
+                        </form>
+                        <div id="registerError" class="alert alert-danger mt-3" style="display: none;"></div>
+                        <div id="registerSuccess" class="alert alert-success mt-3" style="display: none;"></div>
+                        <div class="text-center mt-3">
+                            <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,6 +207,19 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Available Equipment</h2>
             <div class="d-flex align-items-center gap-3">
+                <!-- Equipment Type Filter -->
+                <select class="form-select form-select-sm" id="equipmentTypeFilter" onchange="filterEquipmentByType()">
+                    <option value="">All Types</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Desktop">Desktop</option>
+                    <option value="Monitor">Monitor</option>
+                    <option value="Camera">Camera</option>
+                    <option value="Tablet">Tablet</option>
+                    <option value="Phone">Phone</option>
+                    <option value="Projector">Projector</option>
+                    <option value="Other">Other</option>
+                </select>
+
                 <!-- View Toggle Buttons -->
                 <div class="btn-group" role="group" aria-label="View toggle">
                     <button type="button" class="btn btn-outline-secondary btn-sm active" id="gridViewBtn" onclick="toggleView('grid')">
