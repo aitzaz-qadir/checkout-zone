@@ -49,11 +49,11 @@ function renderGridView(equipment, currentUser) {
     equipmentList.className = 'row equipment-grid-view';
     equipmentList.innerHTML = '';
 
-    equipment.forEach(item => {
+    equipment.forEach((item, index) => {
         const icon = getEquipmentIcon(item.type);
 
         const card = `
-            <div class="col-md-4">
+            <div class="col-md-4 animate-in" style="--i: ${index}">
                 <div class="card equipment-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-2">
@@ -97,11 +97,11 @@ function renderListView(equipment, currentUser) {
     equipmentList.className = 'equipment-list-view';
     equipmentList.innerHTML = '';
 
-    equipment.forEach(item => {
+    equipment.forEach((item, index) => {
         const icon = getEquipmentIcon(item.type);
 
         const listItem = `
-            <div class="equipment-list-item">
+            <div class="equipment-list-item animate-in" style="--i: ${index}">
                 <div class="equipment-list-info">
                     <div class="equipment-list-icon">
                         <i class="bi ${icon}"></i>

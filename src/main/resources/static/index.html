@@ -57,9 +57,6 @@
                             <i class="bi bi-person-circle"></i> <span id="userName"></span>
                         </span>
                 </li>
-                <li class="nav-item" id="adminNav" style="display: none;">
-                    <a class="nav-link" href="#" onclick="showUserManagement()">User Management</a>
-                </li>
                 <li class="nav-item" id="logoutBtn" style="display: none;">
                     <a class="nav-link" href="#" onclick="logout()">Logout</a>
                 </li>
@@ -206,7 +203,7 @@
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Available Equipment</h2>
+            <h2>Equipment</h2>
             <div class="d-flex align-items-center gap-3">
                 <!-- Equipment Type Filter -->
                 <select class="form-select form-select-sm" id="equipmentTypeFilter" onchange="filterEquipmentByType()">
@@ -265,6 +262,16 @@
     </div>
 
 </div>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span>Built by <a href="https://aitzaz-qadir.netlify.app" target="_blank" rel="noopener">Aitzaz Qadir</a> with Spring Boot, PostgreSQL, Docker &amp; AWS</span>
+        <a href="https://github.com/aitzaz-qadir/checkout-zone" target="_blank" rel="noopener">
+            <i class="bi bi-github"></i> View source
+        </a>
+    </div>
+</footer>
 
 <!-- Request Checkout Modal -->
 <div class="modal fade" id="requestModal" tabindex="-1">

@@ -32,8 +32,21 @@ export async function loadDashboard() {
     }
 }
 
-// Set a dashboard counter's text
+// Set a dashboard counter's text; numbers count up from the current value
 function setCount(id, value) {
     const element = document.getElementById(id);
-    if (element) element.textContent = value;
+    if (!element) return;
+    if (typeof value !== 'number') {
+        element.textContent = value;
+        return;
+    }
+    const from = parseInt(element.textContent, 10) || 0;
+    const start = performance.now();
+    // Ease-out over 600ms: fast at first, slowing near the end
+    const step = (now) => {
+        const progress = Math.min((now - start) / 600, 1);
+        element.textContent = Math.round(from + (value - from) * (1 - Math.pow(1 - progress, 3)));
+        if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
 }

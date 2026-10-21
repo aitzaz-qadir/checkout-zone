@@ -116,6 +116,7 @@ export async function login() {
 
             // Update UI
             document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('registerNav').style.display = 'none';
             document.getElementById('userInfo').style.display = 'block';
             document.getElementById('logoutBtn').style.display = 'block';
             document.getElementById('userName').textContent = data.username;
@@ -149,6 +150,7 @@ export function logout() {
     localStorage.removeItem('currentUser');
 
     document.getElementById('loginBtn').style.display = 'block';
+    document.getElementById('registerNav').style.display = 'block';
     document.getElementById('userInfo').style.display = 'none';
     document.getElementById('logoutBtn').style.display = 'none';
     document.getElementById('managerNav').style.display = 'none';
@@ -169,6 +171,7 @@ export function initializeAuth() {
 
             // Update UI for logged-in user
             document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('registerNav').style.display = 'none';
             document.getElementById('userInfo').style.display = 'block';
             document.getElementById('logoutBtn').style.display = 'block';
             document.getElementById('userName').textContent = userData.username;
