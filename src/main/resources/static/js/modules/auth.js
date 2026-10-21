@@ -21,7 +21,6 @@ export async function register() {
     const confirmPassword = document.getElementById('registerConfirmPassword').value;
     const department = document.getElementById('registerDepartment').value;
     const employeeId = document.getElementById('registerEmployeeId').value;
-    const role = document.getElementById('registerRole').value;
 
     // Clear previous errors
     document.getElementById('registerError').style.display = 'none';
@@ -59,8 +58,7 @@ export async function register() {
                 lastName: lastName,
                 password: password,
                 department: department || null,
-                employeeId: employeeId || null,
-                role: role
+                employeeId: employeeId || null
             })
         });
 

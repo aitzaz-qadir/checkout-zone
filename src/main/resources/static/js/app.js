@@ -81,14 +81,9 @@ async function handleLogin() {
     }
 }
 
-// Registration handler
+// Registration handler (doesn't log in; auth.js shows success and redirects to login)
 async function handleRegister() {
-    const user = await Auth.register();
-    if (user) {
-        currentUser = user;
-        Auth.setCurrentUser(user);
-        showEquipment();
-    }
+    await Auth.register();
 }
 
 // Navigation functions - exposed globally

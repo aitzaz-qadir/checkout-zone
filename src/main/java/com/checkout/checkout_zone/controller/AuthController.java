@@ -1,6 +1,7 @@
 package com.checkout.checkout_zone.controller;
 
 // Import statements
+import com.checkout.checkout_zone.entity.Role;
 import com.checkout.checkout_zone.entity.User;
 import com.checkout.checkout_zone.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class AuthController {
         this.userService = userService;
     }
 
+    // Check credentials and return user details
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         Optional<User> userOpt = userService.authenticate(
@@ -52,9 +54,20 @@ public class AuthController {
         }
     }
 
+    // Register a new user (always as a regular USER)
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
         try {
+            // Copy only allowed fields; id, role and active are set by the server
+            User user = new User();
+            user.setUsername(registerRequest.username);
+            user.setPassword(registerRequest.password);
+            user.setEmail(registerRequest.email);
+            user.setFirstName(registerRequest.firstName);
+            user.setLastName(registerRequest.lastName);
+            user.setDepartment(registerRequest.department);
+            user.setEmployeeId(registerRequest.employeeId);
+            user.setRole(Role.USER);
             User created = userService.createUser(user);
 
             // Don't send password back!
@@ -76,6 +89,17 @@ public class AuthController {
     public static class LoginRequest {
         public String username;
         public String password;
+    }
+
+    // Inner class for register request
+    public static class RegisterRequest {
+        public String username;
+        public String password;
+        public String email;
+        public String firstName;
+        public String lastName;
+        public String department;
+        public String employeeId;
     }
 
 }
