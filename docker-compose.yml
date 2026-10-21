@@ -15,7 +15,7 @@ services:
       retries: 10
 
   app:
-    build: .
+    image: ${APP_IMAGE:?Set APP_IMAGE in .env}:${APP_TAG:-latest}
     restart: unless-stopped
     depends_on:
       db:
