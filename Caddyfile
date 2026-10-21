@@ -1,0 +1,4 @@
+# Serve the app over HTTPS; the certificate is obtained and renewed automatically
+{$SITE_ADDRESS} {
+    reverse_proxy app:8080
+}
