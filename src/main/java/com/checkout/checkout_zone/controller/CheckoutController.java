@@ -7,6 +7,8 @@ import com.checkout.checkout_zone.service.UserService;
 import com.checkout.checkout_zone.service.EquipmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -34,12 +36,19 @@ public class CheckoutController {
         this.equipmentService = equipmentService;
     }
 
+    // Look up the logged-in user from the verified principal
+    private User currentUser(UserDetails principal) {
+        return userService.getUserByUsername(principal.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Logged-in user not found"));
+    }
+
     // Create checkout request
     @PostMapping("/request")
-    public ResponseEntity<CheckoutRequest> createCheckoutRequest(@RequestBody CheckoutRequestDTO dto) {
+    public ResponseEntity<CheckoutRequest> createCheckoutRequest(
+            @AuthenticationPrincipal UserDetails principal,
+            @RequestBody CheckoutRequestDTO dto) {
         try {
-            User user = userService.getUserById(dto.userId)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User user = currentUser(principal);
 
             Set<Equipment> equipment = new HashSet<>();
             for (Long equipmentId : dto.equipmentIds) {
@@ -70,24 +79,21 @@ public class CheckoutController {
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
-    // Get requests by user
-    @GetMapping("/requests/user/{userId}")
-    public ResponseEntity<List<CheckoutRequest>> getRequestsByUser(@PathVariable Long userId) {
-        User user = userService.getUserById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        List<CheckoutRequest> requests = checkoutService.getRequestsByUser(user);
+    // Get the logged-in user's requests
+    @GetMapping("/requests/mine")
+    public ResponseEntity<List<CheckoutRequest>> getMyRequests(@AuthenticationPrincipal UserDetails principal) {
+        List<CheckoutRequest> requests = checkoutService.getRequestsByUser(currentUser(principal));
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
     // Approve request
     @PostMapping("/requests/{requestId}/approve")
     public ResponseEntity<CheckoutRequest> approveRequest(
+            @AuthenticationPrincipal UserDetails principal,
             @PathVariable Long requestId,
             @RequestBody ApprovalDTO dto) {
         try {
-            User approver = userService.getUserById(dto.approverId)
-                    .orElseThrow(() -> new IllegalArgumentException("Approver not found"));
-
+            User approver = currentUser(principal);
             CheckoutRequest approved = checkoutService.approveRequest(requestId, approver, dto.notes);
             return new ResponseEntity<>(approved, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
@@ -98,12 +104,11 @@ public class CheckoutController {
     // Reject request
     @PostMapping("/requests/{requestId}/reject")
     public ResponseEntity<CheckoutRequest> rejectRequest(
+            @AuthenticationPrincipal UserDetails principal,
             @PathVariable Long requestId,
             @RequestBody ApprovalDTO dto) {
         try {
-            User approver = userService.getUserById(dto.approverId)
-                    .orElseThrow(() -> new IllegalArgumentException("Approver not found"));
-
+            User approver = currentUser(principal);
             CheckoutRequest rejected = checkoutService.rejectRequest(requestId, approver, dto.notes);
             return new ResponseEntity<>(rejected, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
@@ -114,12 +119,11 @@ public class CheckoutController {
     // Fulfill request (hand out equipment)
     @PostMapping("/requests/{requestId}/fulfill")
     public ResponseEntity<List<CheckoutRecord>> fulfillRequest(
+            @AuthenticationPrincipal UserDetails principal,
             @PathVariable Long requestId,
             @RequestBody FulfillmentDTO dto) {
         try {
-            User manager = userService.getUserById(dto.managerId)
-                    .orElseThrow(() -> new IllegalArgumentException("Manager not found"));
-
+            User manager = currentUser(principal);
             List<CheckoutRecord> records = checkoutService.fulfillCheckoutRequest(
                     requestId, manager, dto.expectedReturnDate
             );
@@ -132,12 +136,11 @@ public class CheckoutController {
     // Return equipment
     @PostMapping("/records/{recordId}/return")
     public ResponseEntity<CheckoutRecord> returnEquipment(
+            @AuthenticationPrincipal UserDetails principal,
             @PathVariable Long recordId,
             @RequestBody ReturnDTO dto) {
         try {
-            User manager = userService.getUserById(dto.managerId)
-                    .orElseThrow(() -> new IllegalArgumentException("Manager not found"));
-
+            User manager = currentUser(principal);
             CheckoutRecord record = checkoutService.returnEquipment(
                     recordId, manager, dto.condition, dto.notes
             );
@@ -154,35 +157,29 @@ public class CheckoutController {
         return new ResponseEntity<>(records, HttpStatus.OK);
     }
 
-    // Get user's current checkouts
-    @GetMapping("/records/user/{userId}/current")
-    public ResponseEntity<List<CheckoutRecord>> getUserCurrentCheckouts(@PathVariable Long userId) {
-        User user = userService.getUserById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        List<CheckoutRecord> records = checkoutService.getUserCurrentCheckouts(user);
+    // Get the logged-in user's current checkouts
+    @GetMapping("/records/mine/current")
+    public ResponseEntity<List<CheckoutRecord>> getMyCurrentCheckouts(@AuthenticationPrincipal UserDetails principal) {
+        List<CheckoutRecord> records = checkoutService.getUserCurrentCheckouts(currentUser(principal));
         return new ResponseEntity<>(records, HttpStatus.OK);
     }
 
     // Inner DTO classes for request bodies
     public static class CheckoutRequestDTO {
-        public Long userId;
         public List<Long> equipmentIds;
         public String purpose;
         public LocalDate neededByDate;
     }
 
     public static class ApprovalDTO {
-        public Long approverId;
         public String notes;
     }
 
     public static class FulfillmentDTO {
-        public Long managerId;
         public LocalDate expectedReturnDate;
     }
 
     public static class ReturnDTO {
-        public Long managerId;
         public EquipmentCondition condition;
         public String notes;
     }

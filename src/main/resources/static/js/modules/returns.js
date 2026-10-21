@@ -83,7 +83,6 @@ export async function submitReturn(currentUser, getAuthHeaders, loadCheckedOut, 
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({
-                managerId: currentUser.id,
                 condition: condition,
                 notes: notes
             })

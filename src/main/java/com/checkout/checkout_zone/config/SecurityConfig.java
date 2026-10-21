@@ -52,7 +52,6 @@ public class SecurityConfig {
 
                         // Checkout - users can request, managers can approve/fulfill
                         .requestMatchers(HttpMethod.POST, "/api/checkout/request").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/checkout/requests/user/**").authenticated()
                         .requestMatchers("/api/checkout/requests/*/approve").hasAnyRole("EQUIPMENT_MANAGER", "ADMIN")
                         .requestMatchers("/api/checkout/requests/*/reject").hasAnyRole("EQUIPMENT_MANAGER", "ADMIN")
                         .requestMatchers("/api/checkout/requests/*/fulfill").hasAnyRole("EQUIPMENT_MANAGER", "ADMIN")

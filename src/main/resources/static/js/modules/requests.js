@@ -48,7 +48,6 @@ export async function submitRequest(currentUser, getAuthHeaders, loadEquipment) 
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({
-                userId: currentUser.id,
                 equipmentIds: [selectedEquipment.id],
                 purpose: purpose,
                 neededByDate: neededBy
@@ -80,7 +79,7 @@ export async function submitRequest(currentUser, getAuthHeaders, loadEquipment) 
 
 export async function loadMyRequests(currentUser, getAuthHeaders) {
     try {
-        const response = await fetch(`/api/checkout/requests/user/${currentUser.id}`, {
+        const response = await fetch('/api/checkout/requests/mine', {
             headers: getAuthHeaders()
         });
 

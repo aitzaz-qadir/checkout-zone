@@ -122,7 +122,6 @@ export async function fulfillRequest(requestId, currentUser, getAuthHeaders, loa
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({
-                managerId: currentUser.id,
                 expectedReturnDate: returnDate
             })
         });
@@ -152,7 +151,6 @@ export async function approveRequest(requestId, currentUser, getAuthHeaders, loa
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({
-                approverId: currentUser.id,
                 notes: notes
             })
         });
@@ -187,7 +185,6 @@ export async function rejectRequest(requestId, currentUser, getAuthHeaders, load
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({
-                approverId: currentUser.id,
                 notes: notes
             })
         });
