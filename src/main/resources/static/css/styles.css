@@ -297,6 +297,37 @@ h6 { font-size: 1rem; font-weight: var(--font-weight-medium); }
     margin-right: 0.5rem;
 }
 
+/* Soft pill badges: tinted background, colored text, optional dot */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+}
+.pill::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: currentColor;
+}
+.pill-plain::before { display: none; }
+.pill-success { color: #047857; background: rgb(16 185 129 / 0.12); }
+.pill-warning { color: #b45309; background: rgb(245 158 11 / 0.15); }
+.pill-danger  { color: #b91c1c; background: rgb(239 68 68 / 0.12); }
+.pill-info    { color: #0369a1; background: rgb(14 165 233 / 0.12); }
+.pill-muted   { color: var(--text-muted); background: rgb(100 116 139 / 0.12); }
+
+/* Brighter pill text on dark backgrounds */
+[data-theme="dark"] .pill-success { color: #34d399; }
+[data-theme="dark"] .pill-warning { color: #fbbf24; }
+[data-theme="dark"] .pill-danger  { color: #f87171; }
+[data-theme="dark"] .pill-info    { color: #38bdf8; }
+
 /* Clean form styling */
 .form-label {
     font-weight: var(--font-weight-medium);

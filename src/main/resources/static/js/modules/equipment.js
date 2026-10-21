@@ -1,4 +1,5 @@
 // Equipment module
+import { statusPill, conditionPill } from '../utils/helpers.js';
 
 let addEquipmentModal = null;
 let currentViewMode = 'grid'; // Default to grid view
@@ -49,9 +50,6 @@ function renderGridView(equipment, currentUser) {
     equipmentList.innerHTML = '';
 
     equipment.forEach(item => {
-        const statusColor = item.status === 'AVAILABLE' ? 'success' :
-        item.status === 'CHECKED_OUT' ? 'warning' : 'secondary';
-
         const icon = getEquipmentIcon(item.type);
 
         const card = `
@@ -67,9 +65,9 @@ function renderGridView(equipment, currentUser) {
                                 <h6 class="card-subtitle text-muted">${item.brand} ${item.model || ''}</h6>
                             </div>
                         </div>
-                        <p class="card-text">
-                            <span class="badge bg-${statusColor} status-badge">${item.status}</span>
-                            <span class="badge bg-info status-badge">${item.condition}</span>
+                        <p class="card-text d-flex flex-wrap gap-2">
+                            ${statusPill(item.status)}
+                            ${conditionPill(item.condition)}
                         </p>
                         <p class="card-text">
                             <small class="text-muted">
@@ -100,9 +98,6 @@ function renderListView(equipment, currentUser) {
     equipmentList.innerHTML = '';
 
     equipment.forEach(item => {
-        const statusColor = item.status === 'AVAILABLE' ? 'success' :
-        item.status === 'CHECKED_OUT' ? 'warning' : 'secondary';
-
         const icon = getEquipmentIcon(item.type);
 
         const listItem = `
@@ -118,9 +113,9 @@ function renderListView(equipment, currentUser) {
                         </div>
                         <div class="equipment-list-secondary">
                             <div class="equipment-list-badges">
-                                <span class="badge bg-${statusColor}">${item.status}</span>
-                                <span class="badge bg-info">${item.condition}</span>
-                                <span class="badge bg-secondary">${item.type}</span>
+                                ${statusPill(item.status)}
+                                ${conditionPill(item.condition)}
+                                <span class="pill pill-plain pill-muted">${item.type}</span>
                             </div>
                             <div class="equipment-list-location">
                                 <i class="bi bi-geo-alt"></i>
