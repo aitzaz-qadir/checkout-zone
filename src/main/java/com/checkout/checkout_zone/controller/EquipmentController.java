@@ -27,7 +27,7 @@ public class EquipmentController {
             Equipment created = equipmentService.createEquipment(equipment);
             return new ResponseEntity<>(created, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -67,7 +67,7 @@ public class EquipmentController {
             Equipment updated = equipmentService.updateEquipment(id, equipment);
             return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

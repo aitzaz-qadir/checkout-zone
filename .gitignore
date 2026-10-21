@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Claude Code ###
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Logs and local env ###
+*.log
+.env

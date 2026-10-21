@@ -27,7 +27,7 @@ public class UserController {
             User created = userService.createUser(user);
             return new ResponseEntity<>(created, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -61,7 +61,7 @@ public class UserController {
             User updated = userService.updateUser(id, user);
             return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

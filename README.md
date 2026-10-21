@@ -13,7 +13,7 @@ An equipment checkout management system for tracking company equipment loans. Bu
 ## 🛠️ Tech Stack
 
 - ☕ **Java 25** - Modern Java with LTS support
-- 🍃 **Spring Boot 3.5.6** - Backend framework
+- 🍃 **Spring Boot 4.1.1** - Backend framework
 - 🗄️ **PostgreSQL 18+** - Relational database
 - 🎨 **Thymeleaf** - Server-side templating engine
 - 🎯 **Spring Data JPA** - Database interaction with Hibernate

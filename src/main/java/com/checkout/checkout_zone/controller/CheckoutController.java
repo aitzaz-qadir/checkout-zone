@@ -49,7 +49,7 @@ public class CheckoutController {
             );
             return new ResponseEntity<>(request, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -88,7 +88,7 @@ public class CheckoutController {
             CheckoutRequest approved = checkoutService.approveRequest(requestId, approver, dto.notes);
             return new ResponseEntity<>(approved, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -104,7 +104,7 @@ public class CheckoutController {
             CheckoutRequest rejected = checkoutService.rejectRequest(requestId, approver, dto.notes);
             return new ResponseEntity<>(rejected, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -122,7 +122,7 @@ public class CheckoutController {
             );
             return new ResponseEntity<>(records, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -140,7 +140,7 @@ public class CheckoutController {
             );
             return new ResponseEntity<>(record, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
