@@ -17,8 +17,8 @@ let addEquipmentModal = null;
 
 // On page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize authentication state first
-    Auth.initializeAuth();
+    // Restore logged-in user (if any) before loading anything
+    currentUser = Auth.initializeAuth();
 
     // Load dashboard and equipment on initial page load
     Dashboard.loadDashboard();

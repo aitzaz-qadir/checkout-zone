@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())  // Disable CSRF for API
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints - anyone can access
-                        .requestMatchers("/", "/index.html", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/*.png", "/favicon.ico").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/test/**").permitAll()  // Keep test endpoints open for now
 
@@ -57,6 +57,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/checkout/requests/*/reject").hasAnyRole("EQUIPMENT_MANAGER", "ADMIN")
                         .requestMatchers("/api/checkout/requests/*/fulfill").hasAnyRole("EQUIPMENT_MANAGER", "ADMIN")
                         .requestMatchers("/api/checkout/records/*/return").hasAnyRole("EQUIPMENT_MANAGER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/checkout/requests",
+                                "/api/checkout/requests/pending",
+                                "/api/checkout/records/current").hasAnyRole("EQUIPMENT_MANAGER", "ADMIN")
                         .requestMatchers("/api/checkout/**").authenticated()
 
                         // Everything else requires authentication

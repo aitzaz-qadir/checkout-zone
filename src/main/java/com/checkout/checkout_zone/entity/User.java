@@ -1,6 +1,7 @@
 package com.checkout.checkout_zone.entity;
 
 // Import statements
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ import java.time.LocalDateTime;
  * - lastName
  * - department
  * - employeeId (Unique)
- * - role (Enum: EMPLOYEE, MANAGER, ADMIN)
+ * - role (Enum: USER, EQUIPMENT_MANAGER, ADMIN)
  * - active (Boolean)
  * - createdAt
  * - updatedAt
@@ -44,6 +45,7 @@ public class User {
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")

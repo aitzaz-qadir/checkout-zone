@@ -182,6 +182,7 @@ export function initializeAuth() {
                 document.getElementById('managerNav2').style.display = 'block';
                 document.getElementById('addEquipmentBtn').style.display = 'block';
             }
+            return userData;
         } catch (error) {
             console.error('Error parsing stored user data:', error);
             // Clear invalid data
@@ -189,4 +190,5 @@ export function initializeAuth() {
             localStorage.removeItem('authCredentials');
         }
     }
+    return null;
 }

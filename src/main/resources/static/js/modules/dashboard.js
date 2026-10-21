@@ -1,40 +1,39 @@
 // Dashboard module - handles loading and displaying dashboard metrics
-import { getAuthHeaders } from '../utils/helpers.js';
+import { getAuthHeaders, getCurrentUser } from '../utils/helpers.js';
 
 export async function loadDashboard() {
+    // Equipment counts (public)
     try {
-        // Load equipment data to calculate metrics
-        const [equipmentResponse, requestsResponse] = await Promise.all([
-            fetch('/api/equipment'),
-            fetch('/api/checkout-requests', {
-                headers: getAuthHeaders()
-            }).catch(() => ({ json: () => [] })) // Handle case when not logged in
-        ]);
-
-        const equipment = await equipmentResponse.json();
-        const requests = requestsResponse.json ? await requestsResponse.json() : [];
-
-        // Calculate metrics
-        const availableCount = equipment.filter(item => item.status === 'AVAILABLE').length;
-        const checkedOutCount = equipment.filter(item => item.status === 'CHECKED_OUT').length;
-        const pendingCount = requests.filter(req => req.status === 'PENDING').length;
-
-        // Update dashboard display
-        updateDashboardCounts(availableCount, checkedOutCount, pendingCount);
-
+        const response = await fetch('/api/equipment');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const equipment = await response.json();
+        setCount('availableCount', equipment.filter(item => item.status === 'AVAILABLE').length);
+        setCount('checkedOutCount', equipment.filter(item => item.status === 'CHECKED_OUT').length);
     } catch (error) {
-        console.error('Error loading dashboard:', error);
-        // Set default values if error occurs
-        updateDashboardCounts(0, 0, 0);
+        console.error('Error loading equipment counts:', error);
+        setCount('availableCount', '—');
+        setCount('checkedOutCount', '—');
+    }
+
+    // Pending count (managers and admins only)
+    const user = getCurrentUser();
+    if (!user || (user.role !== 'EQUIPMENT_MANAGER' && user.role !== 'ADMIN')) {
+        setCount('pendingCount', '—');
+        return;
+    }
+    try {
+        const response = await fetch('/api/checkout/requests/pending', { headers: getAuthHeaders() });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const pending = await response.json();
+        setCount('pendingCount', pending.length);
+    } catch (error) {
+        console.error('Error loading pending count:', error);
+        setCount('pendingCount', '—');
     }
 }
 
-function updateDashboardCounts(available, checkedOut, pending) {
-    const availableElement = document.getElementById('availableCount');
-    const checkedOutElement = document.getElementById('checkedOutCount');
-    const pendingElement = document.getElementById('pendingCount');
-
-    if (availableElement) availableElement.textContent = available;
-    if (checkedOutElement) checkedOutElement.textContent = checkedOut;
-    if (pendingElement) pendingElement.textContent = pending;
+// Set a dashboard counter's text
+function setCount(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
 }
