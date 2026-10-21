@@ -5,11 +5,7 @@ import com.checkout.checkout_zone.entity.CheckoutRequest;
 import com.checkout.checkout_zone.entity.RequestStatus;
 import com.checkout.checkout_zone.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import java.util.List;
-
-// Repository annotation
-@Repository
 
 // Interface definition
 public interface CheckoutRequestRepository extends JpaRepository<CheckoutRequest, Long> {

@@ -3,7 +3,6 @@ package com.checkout.checkout_zone.controller;
 // Import statements
 import com.checkout.checkout_zone.entity.Equipment;
 import com.checkout.checkout_zone.service.EquipmentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +16,12 @@ import java.util.List;
 // Controller class for equipment management
 public class EquipmentController {
 
-    @Autowired
-    private EquipmentService equipmentService;
+    private final EquipmentService equipmentService;
+
+    // Constructor
+    public EquipmentController(EquipmentService equipmentService) {
+        this.equipmentService = equipmentService;
+    }
 
     // Create new equipment
     @PostMapping

@@ -4,7 +4,6 @@ package com.checkout.checkout_zone.service;
 import com.checkout.checkout_zone.entity.Equipment;
 import com.checkout.checkout_zone.entity.EquipmentStatus;
 import com.checkout.checkout_zone.repository.EquipmentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +14,12 @@ import java.util.Optional;
 // Service class for equipment management
 public class EquipmentService {
 
-    @Autowired
-    private EquipmentRepository equipmentRepository;
+    private final EquipmentRepository equipmentRepository;
+
+    // Constructor
+    public EquipmentService(EquipmentRepository equipmentRepository) {
+        this.equipmentRepository = equipmentRepository;
+    }
 
     // Create new equipment
     public Equipment createEquipment(Equipment equipment) {

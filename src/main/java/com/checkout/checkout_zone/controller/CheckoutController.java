@@ -5,7 +5,6 @@ import com.checkout.checkout_zone.entity.*;
 import com.checkout.checkout_zone.service.CheckoutService;
 import com.checkout.checkout_zone.service.UserService;
 import com.checkout.checkout_zone.service.EquipmentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,15 +20,19 @@ import java.util.Set;
 // Controller class for checkout management
 public class CheckoutController {
 
-    // Autowired services
-    @Autowired
-    private CheckoutService checkoutService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private EquipmentService equipmentService;
+    // Services
+    private final CheckoutService checkoutService;
+    private final UserService userService;
+    private final EquipmentService equipmentService;
 
-    // DTO classes for request bodies
+    // Constructor
+    public CheckoutController(CheckoutService checkoutService,
+                              UserService userService,
+                              EquipmentService equipmentService) {
+        this.checkoutService = checkoutService;
+        this.userService = userService;
+        this.equipmentService = equipmentService;
+    }
 
     // Create checkout request
     @PostMapping("/request")

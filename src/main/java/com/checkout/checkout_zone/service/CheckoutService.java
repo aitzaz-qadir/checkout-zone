@@ -5,13 +5,11 @@ import com.checkout.checkout_zone.entity.*;
 import com.checkout.checkout_zone.repository.CheckoutRecordRepository;
 import com.checkout.checkout_zone.repository.CheckoutRequestRepository;
 import com.checkout.checkout_zone.repository.EquipmentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 // Service annotation
@@ -20,13 +18,19 @@ import java.util.Set;
 // Service class for checkout management
 public class CheckoutService {
 
-    // Autowired repositories
-    @Autowired
-    private CheckoutRequestRepository checkoutRequestRepository;
-    @Autowired
-    private CheckoutRecordRepository checkoutRecordRepository;
-    @Autowired
-    private EquipmentRepository equipmentRepository;
+    // Repositories
+    private final CheckoutRequestRepository checkoutRequestRepository;
+    private final CheckoutRecordRepository checkoutRecordRepository;
+    private final EquipmentRepository equipmentRepository;
+
+    // Constructor
+    public CheckoutService(CheckoutRequestRepository checkoutRequestRepository,
+                           CheckoutRecordRepository checkoutRecordRepository,
+                           EquipmentRepository equipmentRepository) {
+        this.checkoutRequestRepository = checkoutRequestRepository;
+        this.checkoutRecordRepository = checkoutRecordRepository;
+        this.equipmentRepository = equipmentRepository;
+    }
 
     // Create a new checkout request
     public CheckoutRequest createCheckoutRequest(User user, Set<Equipment> equipmentItems, String purpose, LocalDate neededByDate) {

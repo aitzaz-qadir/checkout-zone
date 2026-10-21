@@ -4,7 +4,6 @@ package com.checkout.checkout_zone.controller;
 import com.checkout.checkout_zone.entity.*;
 import com.checkout.checkout_zone.repository.*;
 import com.checkout.checkout_zone.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,14 +36,21 @@ import java.util.Set;
 // Controller class
 public class TestController {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private EquipmentService equipmentService;
-    @Autowired
-    private CheckoutService checkoutService;
-    @Autowired
-    private EquipmentRepository equipmentRepository;
+    private final UserService userService;
+    private final EquipmentService equipmentService;
+    private final CheckoutService checkoutService;
+    private final EquipmentRepository equipmentRepository;
+
+    // Constructor
+    public TestController(UserService userService,
+                          EquipmentService equipmentService,
+                          CheckoutService checkoutService,
+                          EquipmentRepository equipmentRepository) {
+        this.userService = userService;
+        this.equipmentService = equipmentService;
+        this.checkoutService = checkoutService;
+        this.equipmentRepository = equipmentRepository;
+    }
 
     @GetMapping("/setup-demo")
     public String setupDemo() {

@@ -4,12 +4,8 @@ package com.checkout.checkout_zone.repository;
 import com.checkout.checkout_zone.entity.Equipment;
 import com.checkout.checkout_zone.entity.EquipmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
-
-// Repository annotation
-@Repository
 
 // Interface definition
 public interface EquipmentRepository extends JpaRepository<Equipment, Long> {

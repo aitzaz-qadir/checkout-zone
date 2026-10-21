@@ -3,7 +3,6 @@ package com.checkout.checkout_zone.service;
 // Import statements
 import com.checkout.checkout_zone.entity.User;
 import com.checkout.checkout_zone.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -15,10 +14,14 @@ import java.util.Optional;
 // Service class for user management
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    // Constructor
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     // Create new user
     public User createUser(User user) {

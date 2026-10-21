@@ -3,7 +3,6 @@ package com.checkout.checkout_zone.controller;
 // Import statements
 import com.checkout.checkout_zone.entity.User;
 import com.checkout.checkout_zone.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +16,12 @@ import java.util.List;
 // Controller class for user management
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    // Constructor
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     // Create new user
     @PostMapping
