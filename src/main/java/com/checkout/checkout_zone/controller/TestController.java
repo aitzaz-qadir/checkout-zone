@@ -4,6 +4,7 @@ package com.checkout.checkout_zone.controller;
 import com.checkout.checkout_zone.entity.*;
 import com.checkout.checkout_zone.repository.*;
 import com.checkout.checkout_zone.service.*;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import java.util.Set;
 // Annotations
 @RestController
 @RequestMapping("/test")
+@Profile("dev")
 
 /*
  * Basic controller to demonstrate the workflow of the application.

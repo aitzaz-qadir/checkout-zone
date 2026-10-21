@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "app.admin.username",
+      "type": "java.lang.String",
+      "description": "Bootstrap admin username. Admin is created on startup only if both username and password are set."
+    },
+    {
+      "name": "app.admin.password",
+      "type": "java.lang.String",
+      "description": "Bootstrap admin password."
+    }
+  ]
+}
