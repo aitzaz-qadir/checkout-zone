@@ -1,67 +1,125 @@
-# 🏢 Checkout Zone
+# CheckoutZone
 
-An equipment checkout management system for tracking company equipment loans. Built with Spring Boot, PostgreSQL, and Thymeleaf for internal IT asset management.
+An internal equipment checkout system: employees request laptops, cameras and other gear, managers approve and hand it out, and returns are tracked with condition notes.
 
-## ✨ Planned Features
+[![CI/CD](https://github.com/aitzaz-qadir/checkout-zone/actions/workflows/ci.yml/badge.svg)](https://github.com/aitzaz-qadir/checkout-zone/actions/workflows/ci.yml)
 
-- **Equipment Management** - Track company equipment (laptops, monitors, peripherals, etc.)
-- **Checkout/Checkin System** - Manage equipment loans to employees
-- **Transaction History** - View complete checkout history and current assignments
-- **Search & Filter** - Find equipment by type, status, or availability
-- **Database Persistence** - PostgreSQL for reliable data storage
+**Live demo:** https://99-79-19-16.sslip.io
 
-## 🛠️ Tech Stack
+<!-- Screenshots: save images to docs/screenshots/ and uncomment
+![Dashboard](docs/screenshots/dashboard.png)
+![Approvals](docs/screenshots/approvals.png)
+![Dark mode](docs/screenshots/dark-mode.png)
+-->
 
-- ☕ **Java 25** - Modern Java with LTS support
-- 🍃 **Spring Boot 4.1.1** - Backend framework
-- 🗄️ **PostgreSQL 18+** - Relational database
-- 🎨 **Thymeleaf** - Server-side templating engine
-- 🎯 **Spring Data JPA** - Database interaction with Hibernate
-- 📦 **Maven** - Dependency management
+## Demo accounts
 
-## 📁 Project Structure
+| Role | Username | Password |
+|---|---|---|
+| Employee | `jane.smith` | `password123` |
+| Equipment manager | `bob.manager` | `password123` |
 
+Demo data is shared by all visitors, so you may see other people's requests.
+
+## Features
+
+- **Checkout workflow:** request → approve or reject → hand out → return, enforced server-side
+- **Role-based access:** employees request equipment; managers approve, hand out and process returns; admins manage users through the API
+- **Equipment catalogue:** grid and list views, type filter, colour-coded status and condition
+- **Dashboard:** live counts of available, checked-out and pending items
+- **Overdue tracking:** overdue checkouts are flagged on the returns page
+- **Light and dark themes**
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Java 25, Spring Boot 4, Spring Data JPA (Hibernate), Spring Security |
+| Database | PostgreSQL 18 |
+| Frontend | Vanilla JavaScript (ES modules), Bootstrap 5 |
+| Testing | JUnit, Mockito, Spring Boot Test |
+| Containers | Docker (multi-stage build), Docker Compose, Caddy (automatic HTTPS) |
+| Cloud | AWS EC2, ECR, IAM (OIDC federation), Systems Manager |
+| CI/CD | GitHub Actions |
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Browser -- HTTPS --> Caddy
+    subgraph EC2["AWS EC2 (Docker Compose)"]
+        Caddy -- reverse proxy --> App["Spring Boot app"]
+        App --> DB[(PostgreSQL)]
+    end
 ```
-src/
-├── main/
-│   ├── java/com/checkout/checkout_zone/
-│   │   ├── model/          # Entity classes (Equipment, User, etc.)
-│   │   ├── repository/     # Data access layer
-│   │   ├── service/        # Business logic
-│   │   └── controller/     # REST endpoints
-│   └── resources/
-│       ├── application.properties  # Database configuration
-│       ├── templates/              # Thymeleaf HTML templates
-│       └── static/                 # CSS, JS, images
-└── test/                   # Unit and integration tests
+
+The backend follows a standard layered design: `controller` (REST endpoints) → `service` (business rules) → `repository` (Spring Data JPA) → `entity`. The frontend is a single page served as static files by the same app.
+
+### CI/CD pipeline
+
+```mermaid
+flowchart LR
+    Push["Push to main"] --> Test["Tests<br/>(JUnit + temporary PostgreSQL)"]
+    Test --> Build["Build Docker image"]
+    Build --> ECR["Push to Amazon ECR"]
+    ECR --> SSM["Deploy via AWS SSM"]
+    SSM --> EC2["EC2 pulls image<br/>and restarts"]
 ```
 
-## 🚀 Getting Started
+- Every push and pull request runs the test suite against a throwaway PostgreSQL.
+- On `main`, GitHub Actions builds the image, tags it with the commit SHA, pushes it to ECR, and tells the server to deploy that exact version.
+- AWS setup (IAM policies, ECR lifecycle rule, deploy script) is versioned in [`infra/`](infra/).
 
-### Prerequisites
+## Security highlights
 
-- Java 21 or higher
-- PostgreSQL 18.0
-- Maven (included via wrapper)
+- **No stored cloud credentials:** GitHub Actions authenticates to AWS with OIDC and receives short-lived credentials for one role, restricted to this repo's `main` branch.
+- **Least-privilege IAM:** the pipeline can only push to one ECR repository and run commands on one instance; the server can only pull images and talk to SSM.
+- **SSH closed to the internet:** deploys go through Systems Manager, so port 22 only accepts the owner's IP.
+- **Server-side identity:** the acting user always comes from the authenticated session, never from request bodies or URLs.
+- **Safe registration:** a dedicated request DTO blocks role escalation and mass assignment.
+- **Passwords:** BCrypt-hashed, never returned in API responses.
+- **Secrets:** database and admin credentials come from environment variables, never from the repo.
 
-### Installation
+## Running locally
+
+**Prerequisites:** Java 25 and PostgreSQL (Maven is included via the wrapper).
+
 ```bash
-# Clone the repository
 git clone https://github.com/aitzaz-qadir/checkout-zone.git
-
-# Navigate to project directory
 cd checkout-zone
-
-# Create PostgreSQL database
 createdb -U postgres cz_data
-
-# Run the application
-./mvnw spring-boot:run
+./mvnw spring-boot:run        # Windows: .\mvnw.cmd spring-boot:run
 ```
 
-The application will start on http://localhost:8080
+Open http://localhost:8080. Demo users and equipment are seeded on startup. The local `dev` profile also enables SQL logging and `/test/*` workflow helpers.
 
-## 👨‍💻 Author
+**Tests:** `./mvnw test` (the context test needs the database running; the service unit tests don't).
+
+**Configuration:** database and admin settings are read from environment variables with local defaults. See [`.env.example`](.env.example) for production settings.
+
+## Project structure
+
+```
+src/main/java/com/checkout/checkout_zone/
+├── config/        # Security rules, demo data seeder
+├── controller/    # REST endpoints
+├── service/       # Business rules (checkout workflow)
+├── repository/    # Spring Data JPA repositories
+└── entity/        # JPA entities and enums
+src/main/resources/static/   # Frontend (HTML, CSS, JS modules)
+infra/                       # AWS policies and deploy script
+.github/workflows/           # CI/CD pipeline
+```
+
+## Roadmap
+
+- JWT authentication to replace HTTP Basic (credentials are currently kept in browser storage, mitigated by HTTPS)
+- Frontend rendering hardening
+- Database migrations with Flyway instead of Hibernate auto-update
+- Overdue reminder emails using a serverless pipeline (EventBridge, Lambda, SQS, SES, DynamoDB)
+- Admin page for managing users and roles
+
+## Author
 
 **Aitzaz Qadir**
 
@@ -70,6 +128,4 @@ The application will start on http://localhost:8080
 - LinkedIn: [linkedin.com/in/aitzaz-qadir](https://www.linkedin.com/in/aitzaz-qadir/)
 - Email: aitzazqk@gmail.com
 
-📝 License
-
-- This project is open source and available for educational purposes.
+This project is open source and available for educational purposes.
