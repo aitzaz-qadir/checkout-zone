@@ -111,6 +111,12 @@ public class CheckoutService {
         if (request.getStatus() != RequestStatus.APPROVED) {
             throw new IllegalArgumentException("Only approved requests can be fulfilled");
         }
+        // Check all equipment is still available before handing anything out
+        for (Equipment equipment : request.getEquipmentItems()) {
+            if (equipment.getStatus() != EquipmentStatus.AVAILABLE) {
+                throw new IllegalArgumentException("Equipment " + equipment.getName() + " is no longer available");
+            }
+        }
         List<CheckoutRecord> records = new java.util.ArrayList<>();
         for (Equipment equipment : request.getEquipmentItems()) {
             // Create checkout record
